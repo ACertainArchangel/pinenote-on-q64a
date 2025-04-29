@@ -1,0 +1,60 @@
+# Maintainer: hrdl <git@hrdl.eu>
+
+pkgname=pinenote-arch
+pkgver=0.1
+pkgrel=1
+pkgdesc="Scripts and configurations for the Pine64 PineNote and hrdl's rockchip_ebc driver"
+arch=(any)
+license=(GPL3)
+url="https://git.sr.ht/~hrdl/pinenote-shared"
+depends=()
+optdepends=()
+#source=("git+https://git.sr.ht/~hrdl/pinenote-shared.git")
+#sha256sums=('SKIP')
+
+# pkgver() {
+#   cd ../../..
+#   git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+# }
+
+package() {
+  cd ../../..
+  install -Dm644 etc/libinput/local-overrides.quirks -t "${pkgdir}/etc/libinput"
+  install -Dm644 etc/modprobe.d/{rockchip_ebc,wifi}.conf -t "${pkgdir}/etc/modprobe.d"
+  
+  (
+    cd etc/udev/rules.d
+    install -Dm644 81-libinput-pinenote.rules 83-backlight.rules 84-rockchip-ebc-power.rules -t "${pkgdir}/etc/udev/rules.d"
+  )
+
+  (
+    cd etc/greetd
+    install -Dm644 environments sway-config -t "${pkgdir}/etc/greetd"
+  )
+
+  (
+    cd bin
+    install -Dm755 before_sleep.sh after_resume.sh -t "${pkgdir}/usr/bin"
+    install -Dm755 launch_lisgd.sh toggle_menu.sh sway_rotate.sh sway_workspace toggle_onscreen_keyboard.py -t "${pkgdir}/usr/bin"
+    # install -Dm755 xournalpp_pen_enter_proximity.sh xournalpp_pen_leave_proximity.sh -t "${pkgdir}/usr/bin"
+    # install -Dm755 share_tablet -t "${pkgdir}/usr/bin"
+    install -Dm755 waveform_extract.sh read_file.py wbf_to_custom.py -t "${pkgdir}/usr/bin"
+    install -Dm755 rockchip_ebc_custom_ioctl.py -t "${pkgdir}/usr/lib/python3.13/site-packages"
+    install -Dm755 sway_dbus_integration.py -t "${pkgdir}/usr/bin"
+  )
+
+  install -Dm644 cache/nwg-pin-cache -t "${pkgdir}/etc/skel/.cache"
+  
+  (
+    cd config
+    install -Dm644 xournalpp/{settings.xml,toolbar.ini} -t "${pkgdir}/etc/skel/.config/xournalpp"
+    install -Dm644 sway/{colorscheme,config} -t "${pkgdir}/etc/skel/.config/sway"
+    install -Dm644 waybar/{config,style.css} -t "${pkgdir}/etc/skel/.config/waybar"
+    install -Dm644 nwg-panel/menu-start.css -t "${pkgdir}/etc/skel/.config/nwg-panel"
+  )
+
+  (
+    cd systemd
+    install -Dm644 pinenote-create-user@.service pinenote-hrdl-extract-waveform.service pinenote-hrdl-convert-waveform.service -t "${pkgdir}/usr/lib/systemd/system"
+  )
+}

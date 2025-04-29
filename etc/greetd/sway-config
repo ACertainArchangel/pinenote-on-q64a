@@ -1,0 +1,3 @@
+exec "squeekboard"
+exec "gtkgreet -l; swaymsg exit"
+include /etc/sway/config.d/*

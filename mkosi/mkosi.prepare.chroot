@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -x
+echo '/dev/disk/by-partlabel/data /home              ext4   defaults' >> /etc/fstab
+
+groupadd --system nopasswdlogin
+
+sed -i '3i auth       sufficient   pam_succeed_if.so user ingroup nopasswdlogin' /etc/pam.d/greetd
+
+# Create user so it aligns with the debian installation
+useradd --no-create-home \
+	--user-group \
+	--groups video,input,wheel,nopasswdlogin \
+	--password '$6$Obornd5f4KHjQazA$2KJg4laPUtZSx6kMlwkR1NzWQdrtOjpVjxvSxi07iAbiUOHKggTde32YN1v40voRiZW96LKKhJkzvFS8EWhMx/' \
+	user

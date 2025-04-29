@@ -1,0 +1,13 @@
+[Unit]
+Description=Convert rockchip_ebc ebc.wbf waveform to custom_wf.bin
+After=pinenote-hrdl-extract-waveform.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/bin/test ! -e /usr/lib/firmware/rockchip/custom_wf.bin
+ExecCondition=/usr/bin/test -e /usr/lib/firmware/rockchip/ebc.wbf
+ExecStart=/bin/sh -c 'cd /tmp && wbf_to_custom.py /usr/lib/firmware/rockchip/ebc.wbf && mv custom_wf.bin /usr/lib/firmware/rockchip/custom_wf.bin && mkinitcpio -P && (modprobe -r rockchip_ebc; modprobe rockchip_ebc)'
+
+[Install]
+RequiredBy=display-manager.service

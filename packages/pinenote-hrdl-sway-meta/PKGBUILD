@@ -1,0 +1,20 @@
+# Maintainer: hrdl <git@hrdl.eu>
+
+pkgname=pinenote-hrdl-sway-meta
+pkgver=0.1
+pkgrel=1
+pkgdesc="Packages for a greetd/sway setup using hrdl's rockchip_ebc tree" 
+arch=(any)
+license=(GPL3)
+url="https://git.sr.ht/~hrdl/pinenote-shared"
+depends=(
+  sway swaybg swayidle wtype waybar squeekboard network-manager-applet
+  squeekboard nwg-menu 
+  lisgd lisgd-debug
+  rot8-git rot8-git-debug iio-sensor-proxy
+  jq brightnessctl
+  greetd greetd-gtkgreet
+  python-numpy python-dbus-next python-i3ipc python-pydbus
+  linux-pinenote-hrdl=6.15.0_rc3_00337_g482a48c60427-1
+  pinenote-arch
+)

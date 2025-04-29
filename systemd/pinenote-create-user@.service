@@ -1,0 +1,13 @@
+[Unit]
+Description=Create user %I at initial boot
+ConditionFirstBoot=yes
+After=home.mount
+Before=display-manager.service first-boot-complete.target
+
+[Service]
+Type=oneshot
+Environment=PASSWORD='$6$Obornd5f4KHjQazA$2KJg4laPUtZSx6kMlwkR1NzWQdrtOjpVjxvSxi07iAbiUOHKggTde32YN1v40voRiZW96LKKhJkzvFS8EWhMx/' %i
+ExecStart=/usr/bin/useradd --create-home --user-group --groups video,input,wheel,nopasswdlogin --password ${PASSWORD} %i
+
+[Install]
+RequiredBy=multi-user.target

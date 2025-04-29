@@ -1,0 +1,52 @@
+# Maintainer: hrdl <git@hrdl.eu>
+
+pkgname=linux-pinenote-hrdl
+pkgver=6.15.0_rc3_gbddeeb47679c
+pkgrel=1
+pkgdesc="Linux kernel for PineNote"
+arch=(aarch64)
+url="https://git.sr.ht/~hrdl/linux"
+license=(GPL-2.0-only)
+# makedepends=(bc kmod clang)
+makedepends=(git clang llvm lld bc)
+source=(
+  git+https://git.sr.ht/~hrdl/linux#branch=hrdl-pinenote-6.15rc3
+  linux-pinenote-hrdl.preset
+  mkinitcpio.conf)
+sha256sums=('SKIP'
+            '04f32e525aa1c99b8dfc4e160daaf86469730b9b6685af985262de46a63bb4ab'
+            '70c78d88791f018ee55876270d61c0c99f7c0c1c0b871890380c95afbc90dc86')
+b2sums=('SKIP'
+        'ccd4c77b2d9e6cd44283c573b1822c5aa1bde9b9aa520197d0e3ad1a00e1cc4400321e9014e787baa828e4ea469c3db8dd7c228d38a763a122bacc47d9c866c0'
+        '397dbf8aa17aa66b66684f0560d1b619559a53bc52af31a4356bdac0bd89fa2d759b9779f3a1513e05caa586edb83dd0c70fab588a23170cb2245d64dc6ccee8')
+provides=("linux=${pkgver}" KSMBD-MODULE WIREGUARD-MODULE)
+options=(!strip !debug)
+
+CARCH=aarch64
+
+pkgver() {
+  cd "$srcdir/linux"
+  make -s kernelrelease | sed 's/-/_/g'
+}
+
+prepare() {
+  cd "$srcdir/linux"
+  yes "" | make ARCH=arm64 pinenote_defconfig
+}
+
+build() {
+  cd "$srcdir/linux"
+  yes "" | make ARCH=arm64 LLVM=1 Image Image.gz modules rockchip/rk3566-pinenote-v1.{1,2}.dtb
+}
+
+package() {
+  cd "$srcdir/linux"
+  _kernel_release=$(make -s kernelrelease)
+  install -Dm644 arch/arm64/boot/Image -t "${pkgdir}/boot"
+  install -Dm644 arch/arm64/boot/Image.gz "${pkgdir}/usr/lib/modules/${_kernel_release}/vmlinuz"
+  install -Dm644 arch/arm64/boot/dts/rockchip/rk3566-pinenote-v1.{1,2}.dtb -t "${pkgdir}/boot"
+  make INSTALL_MOD_PATH="${pkgdir}/usr" modules_install
+  sed -e "s/%KERNVER%/${_kernel_release}/g" -e "s/%PKGBASE%/${pkgname}/g" "${srcdir}/linux-pinenote-hrdl.preset" | install -Dm644 /dev/stdin "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
+  install -Dm644 "${srcdir}/mkinitcpio.conf" "${pkgdir}/etc/mkinitcpio.conf.d/${pkgname}.conf"
+  echo "${pkgname}" | install -Dm644 /dev/stdin "${pkgdir}/usr/lib/modules/${_kernel_release}/pkgbase"
+}

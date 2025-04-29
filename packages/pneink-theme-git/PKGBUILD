@@ -1,0 +1,24 @@
+# Maintainer: hrdl <git@hrdl.eu>
+
+pkgname=pneink-theme-git
+pkgver=0.1
+pkgrel=1
+provides=(pneink-theme)
+pkgdesc="PNEink theme for GTK3"
+arch=(any)
+license=(MIT)
+url="https://github.com/PNDeb/PNEink"
+source=("git+https://github.com/PNDeb/PNEink.git" "0001-add-theme-colors.patch")
+b2sums=('SKIP' '6437262f1e35bf8d24e41585166a72ffec50b2d40c0fc25ac49cbfd2caa6f657abe0b3fff488ebddbb72cd2a6a6a44c2e91498e07103f9d80b37e72f5eab26ef')
+options=(!debug)
+
+prepare() {
+  cd "${srcdir}/PNEink"
+  patch --forward --strip=1 --input="${srcdir}/0001-add-theme-colors.patch"
+}
+
+package() {
+  cd "${srcdir}/PNEink"
+  mkdir -p "${pkgdir}/usr/share/themes/PNEink"
+  cp -r common gnome-shell gtk-3.0 "${pkgdir}/usr/share/themes/PNEink"
+}

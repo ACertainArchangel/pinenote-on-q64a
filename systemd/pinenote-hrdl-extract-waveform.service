@@ -1,0 +1,10 @@
+[Unit]
+Description=Extract rockchip_ebc ebc.wbf waveform from waveform partition
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/bin/test ! -e /usr/lib/firmware/rockchip/ebc.wbf
+ExecStart=/usr/bin/waveform_extract.sh
+
+[Install]
+WantedBy=default.target

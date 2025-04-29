@@ -1,0 +1,1 @@
+DRIVER=="rockchip-ebc", RUN+="/bin/chgrp video /sys/%p/power/control", RUN+="/bin/chmod g+w /sys/%p/power/control"

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+systemctl enable sshd.service
+systemctl enable pinenote-hrdl-extract-waveform.service pinenote-hrdl-convert-waveform.service
+systemctl enable greetd
+systemctl enable NetworkManager
+systemctl enable pinenote-create-user@archuser
+
+dconf update
+
+pacman-key --init
+pacman-key --populate archlinuxarm

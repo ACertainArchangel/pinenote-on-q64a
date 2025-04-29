@@ -1,0 +1,10 @@
+[org/gnome/desktop/a11y/applications]
+# This one is also needed for the the greeter. Alternatively give greeter a
+# writable home directory and set this one via e.g. in its sway config
+screen-keyboard-enabled=true
+
+[org/gnome/desktop/interface]
+cursor-theme='Transparent'
+enable-animations=false
+gtk-theme='PNEink'
+icon-theme='Papirus'
