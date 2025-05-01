@@ -2,11 +2,11 @@
 
 pkgname=pinenote-arch
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Scripts and configurations for the Pine64 PineNote and hrdl's rockchip_ebc driver"
 arch=(any)
 license=(GPL3)
-url="https://git.sr.ht/~hrdl/pinenote-shared"
+url="https://git.sr.ht/~hrdl/pinenote-dist"
 depends=()
 optdepends=()
 #source=("git+https://git.sr.ht/~hrdl/pinenote-shared.git")
