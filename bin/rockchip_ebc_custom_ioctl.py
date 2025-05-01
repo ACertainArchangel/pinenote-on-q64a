@@ -175,7 +175,7 @@ def extract_fbs_to_dir(parent_path: Path):
     return r
 
 def set_rect_hint(_rect_hint: rect_hint):
-    set_rect_hint([_rect_hint])
+    set_rect_hints([_rect_hint])
 
 def set_mode(_mode: int):
     with open(filename, 'w+b', buffering=0) as fd:

@@ -64,7 +64,7 @@ class HintRect:
     rect: Rect
 
     def to_ioctl_hint_rect(self) -> rockchip_ebc_custom_ioctl.rect_hint:
-        return rockchip_ebc_custom_ioctl.rect_hint(hint=self.hint, rect=self.rect.to_ioctl_drm_mode_rect())
+        return rockchip_ebc_custom_ioctl.rect_hint(hints=self.hint, rect=self.rect.to_ioctl_drm_mode_rect())
 
 @dataclass
 class AppHintSetting:
@@ -212,7 +212,7 @@ class EPDManager:
             self.drm_rect_hints = drm_rect_hints
             self.log.info("Setting drm hints %s", drm_rect_hints)
             if DO_IOCTL:
-                rockchip_ebc_custom_ioctl.set_rect_hints(list(map(HintRect.to_ioctl_hint_rect, drm_rect_hints)))
+                rockchip_ebc_custom_ioctl.set_rect_hints(list(map(HintRect.to_ioctl_hint_rect, drm_rect_hints)), self.default_hint)
 
     def get_overlap_on_epd_output(self, con: i3ipc.con.Con, win_rect: Rect | None = None) -> Rect:
         r = con.rect
