@@ -2,7 +2,7 @@
 
 pkgname=pinenote-hrdl-sway-meta
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Packages for a greetd/sway setup using hrdl's rockchip_ebc tree" 
 arch=(any)
 license=(GPL3)
@@ -15,6 +15,6 @@ depends=(
   jq brightnessctl
   greetd greetd-gtkgreet
   python-numpy python-dbus-next python-i3ipc python-pydbus
-  linux-pinenote-hrdl=6.15.0_rc3_00337_g482a48c60427-1
+  linux-pinenote-hrdl=6.15.0_rc3_00340_g81175570f08f-1
   pinenote-arch
 )
