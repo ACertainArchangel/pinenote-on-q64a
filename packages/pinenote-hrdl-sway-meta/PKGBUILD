@@ -15,6 +15,6 @@ depends=(
   jq brightnessctl
   greetd greetd-gtkgreet
   python-numpy python-dbus-next python-i3ipc python-pydbus
-  linux-pinenote-hrdl=6.15.0_rc3_00340_g81175570f08f-1
-  pinenote-arch
+  linux-pinenote-hrdl=6.15.0_rc3_00340_g81175570f08f-1 # TODO: adjust
+  pinenote-arch>=0.1-3
 )

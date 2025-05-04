@@ -5,7 +5,7 @@ vt = 1
 
 [initial_session]
 user = "archuser"
-command = "sway"
+command = "sway_hrdl"
 
 # The default session, also known as the greeter.
 [default_session]

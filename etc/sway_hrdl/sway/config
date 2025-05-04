@@ -232,7 +232,7 @@ bindsym $mod+r mode "resize"
 
 bar {
     position top
-    swaybar_command waybar
+    swaybar_command waybar_hrdl
 }
 
 exec --no-startup-id nm-applet --indicator &

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=sway_hrdl
+Comment=A sway/waybar configuration integrated into hrdl's custom rockchip_ebc driver
+Exec=sway_hrdl
+Type=Application

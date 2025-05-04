@@ -1,0 +1,3 @@
+#!/bin/sh
+
+waybar --config /etc/sway_hrdl/waybar/config --style /etc/sway_hrdl/waybar/style
