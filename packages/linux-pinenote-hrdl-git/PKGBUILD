@@ -1,7 +1,7 @@
 # Maintainer: hrdl <git@hrdl.eu>
 
-pkgname=linux-pinenote-hrdl
-pkgver=6.15.0_rc3_gbddeeb47679c
+pkgname=linux-pinenote-hrdl-git
+pkgver=6.15.0_rc3_00344_ga056c7b8dd76
 pkgrel=1
 pkgdesc="Linux kernel for PineNote"
 arch=(aarch64)
@@ -20,6 +20,7 @@ b2sums=('SKIP'
         'ccd4c77b2d9e6cd44283c573b1822c5aa1bde9b9aa520197d0e3ad1a00e1cc4400321e9014e787baa828e4ea469c3db8dd7c228d38a763a122bacc47d9c866c0'
         '397dbf8aa17aa66b66684f0560d1b619559a53bc52af31a4356bdac0bd89fa2d759b9779f3a1513e05caa586edb83dd0c70fab588a23170cb2245d64dc6ccee8')
 provides=("linux=${pkgver}" KSMBD-MODULE WIREGUARD-MODULE)
+conflicts=(linux-pinenote-hrdl)
 options=(!strip !debug)
 
 CARCH=aarch64
