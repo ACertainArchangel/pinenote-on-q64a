@@ -18,6 +18,8 @@ REDRAW = 0x80
 MODE_NORMAL = 0
 MODE_FAST = 1
 
+SCREEN_DIMS = 1872, 1404
+
 class trigger_global_refresh(ctypes.Structure):
     _fields_ = [
         ("trigger_global_refresh", ctypes.c_bool),
@@ -130,7 +132,7 @@ def DRM_IOWR(nr, type_):
     return _IOWR(DRM_IOCTL_BASE, nr, type_)
 
 DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH = DRM_IOWR(DRM_COMMAND_BASE + 0, trigger_global_refresh)
-DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN = DRM_IOWR(DRM_COMMAND_BASE + 1, off_screen)
+DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN = DRM_IOW(DRM_COMMAND_BASE + 1, off_screen)
 DRM_IOCTL_ROCKCHIP_EBC_EXTRACT_FBS = DRM_IOWR(DRM_COMMAND_BASE + 2, extract_fbs)
 DRM_IOCTL_ROCKCHIP_EBC_RECT_HINTS = DRM_IOW(DRM_COMMAND_BASE + 3, rect_hints)
 DRM_IOCTL_ROCKCHIP_EBC_MODE = DRM_IOWR(DRM_COMMAND_BASE + 4, mode)
@@ -140,6 +142,21 @@ direct_mode_parameter = '/sys/module/rockchip_ebc/parameters/direct_mode'
 def global_refresh():
     with open(filename, 'w+b', buffering=0) as fd:
         r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH, trigger_global_refresh(True))
+
+def set_off_screen(off_screen_path: Path):
+    from PIL import Image
+    import numpy as np
+    img = Image.open(off_screen_path).convert(mode='L', colors=16)
+    if (img.height, img.width) == SCREEN_DIMS:
+        img = img.transpose(Transpose.ROTATE_90)
+    if (img.width, img.height) != SCREEN_DIMS:
+        img = img.resize(SCREEN_DIMS)
+    img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+    arr = np.array(img, np.uint8) >> 4
+    buf_off_screen = ctypes.create_string_buffer(arr.tobytes(), SCREEN_DIMS[0] * SCREEN_DIMS[1])
+    _off_screen = off_screen(ptr_screen_content=ctypes.cast(buf_off_screen, ctypes.POINTER(ctypes.c_char_p)))
+    with open(filename, 'w+b', buffering=0) as fd:
+        r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN, _off_screen)
 
 def extract_fbs_to_dir(parent_path: Path):
     num_pixels = 1872 * 1404
