@@ -159,7 +159,7 @@ def set_off_screen(off_screen_path: Path):
         r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN, _off_screen)
 
 def extract_fbs_to_dir(parent_path: Path):
-    num_pixels = 1872 * 1404
+    num_pixels = SCREEN_DIMS[0] * SCREEN_DIMS[1]
     direct_mode = True
     _direct_mode_param = Path(direct_mode_parameter)
     try:
@@ -174,11 +174,11 @@ def extract_fbs_to_dir(parent_path: Path):
     buf_phase1 = ctypes.create_string_buffer(phase_size)
     buf_phase2 = ctypes.create_string_buffer(phase_size)
     _extract_fbs = extract_fbs(
-        ctypes.cast(ctypes.pointer(buf_packed_inner_outer_nextprev), ctypes.POINTER(ctypes.c_char_p)),
-        ctypes.cast(ctypes.pointer(buf_hints), ctypes.POINTER(ctypes.c_char_p)),
-        ctypes.cast(ctypes.pointer(buf_prelim_target), ctypes.POINTER(ctypes.c_char_p)),
-        ctypes.cast(ctypes.pointer(buf_phase1), ctypes.POINTER(ctypes.c_char_p)),
-        ctypes.cast(ctypes.pointer(buf_phase2), ctypes.POINTER(ctypes.c_char_p))
+        ctypes.cast(buf_packed_inner_outer_nextprev, ctypes.POINTER(ctypes.c_char_p)),
+        ctypes.cast(buf_hints, ctypes.POINTER(ctypes.c_char_p)),
+        ctypes.cast(buf_prelim_target, ctypes.POINTER(ctypes.c_char_p)),
+        ctypes.cast(buf_phase1, ctypes.POINTER(ctypes.c_char_p)),
+        ctypes.cast(buf_phase2, ctypes.POINTER(ctypes.c_char_p))
     )
 
     with open(filename, 'w+b', buffering=0) as fd:
