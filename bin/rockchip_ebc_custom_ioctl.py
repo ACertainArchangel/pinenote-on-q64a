@@ -261,3 +261,10 @@ def get_zero_waveform() -> bool:
     with open(filename, 'w+b', buffering=0) as fd:
         r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_ZERO_WAVEFORM, _zero_waveform)
     return bool(_zero_waveform.zero_waveform_mode)
+
+def cycle_driver_mode():
+    match get_mode_inf().driver_mode:
+        case DriverMode.NORMAL:
+            set_mode_inf(driver_mode=DriverMode.FAST)
+        case DriverMode.FAST:
+            set_mode_inf(driver_mode=DriverMode.NORMAL)

@@ -34,6 +34,7 @@
         "sway/mode",
     ],
     "modules-right": [
+        "custom/ebc_cycle_driver_mode",
         "custom/ebc_refresh",
         "custom/blc_down",
         "backlight/slider#cool",
@@ -303,6 +304,13 @@
         "activated": "",
         "deactivated": ""
       }
+    },
+    "custom/ebc_cycle_driver_mode": {
+      "format": "🚲",
+      "interval": "once",
+      "on-click": "python -c 'import rockchip_ebc_custom_ioctl as reci; reci.cycle_driver_mode()'",
+      "min-length": 5,
+      "tooltip": false,
     },
     "custom/ebc_refresh": {
       "format": "",
