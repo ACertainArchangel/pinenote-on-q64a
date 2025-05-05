@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sway --config /etc/sway_hrdl/sway/config
