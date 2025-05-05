@@ -1,5 +1,7 @@
 # PineNote Arch Linux
 
+![Screenshot of an sway desktop with with a waybar explaining various elements](doc/screenshot_sway_waybar.png)
+
 This repository contains all utilities required to create an Arch Linux system for the PineNote using
 - `hrdl`'s custom `rockchip_ebc` kernel,
 - `greetd`, `sway`, `gtkgreet`, and `squeekboard` as greeter,
@@ -23,7 +25,7 @@ To create a preconfigured distribution image:
   - `fonts-noto-hinted`
   - `koreader-bin`
   - `lisgd`
-  - `rot8`
+  - `rot8-git`
   - `xournalpp-git`: better multitouch and reduced damage regions in menu
 3. Build `arch.tar.zst` on an `aarch64` device: `cd mkosi; mkosi`
 
