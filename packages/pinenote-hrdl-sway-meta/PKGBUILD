@@ -14,7 +14,7 @@ depends=(
   rot8-git rot8-git-debug iio-sensor-proxy
   jq brightnessctl
   greetd greetd-gtkgreet
-  python-numpy python-dbus-next python-i3ipc python-pydbus
+  python-numpy python-pillow python-dbus-next python-i3ipc python-pydbus
   linux-pinenote-hrdl-git=6.15.0_rc3_00344_ga056c7b8dd76-1
   'pinenote-arch>=0.1-3'
 )
