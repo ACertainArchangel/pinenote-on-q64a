@@ -5,6 +5,8 @@
 # and
 # https://github.com/m-weigand/mw_pinenote_misc/blob/main/rockchip_ebc/python_misc/extract_fbs/ioctl_extract_fbs.py
 import ctypes
+from dataclasses import dataclass
+from enum import IntEnum
 import fcntl
 from pathlib import Path
 
@@ -15,8 +17,21 @@ THRESHOLD = 0x00
 DITHER = 0x40
 REDRAW = 0x80
 
-MODE_NORMAL = 0
-MODE_FAST = 1
+class DriverMode(IntEnum):
+    NORMAL = 0
+    FAST = 1
+    ZERO_WAVEFORM = 2
+
+class DitherMode(IntEnum):
+    BAYER = 0
+    BLUE_NOISE_16 = 1
+    BLUE_NOISE_32 = 2
+
+@dataclass
+class ModeInf:
+    driver_mode: DriverMode
+    dither_mode: DitherMode
+    redraw_delay: int
 
 SCREEN_DIMS = 1872, 1404
 
@@ -66,11 +81,21 @@ class rect_hints(ctypes.Structure):
 
 class mode(ctypes.Structure):
     _fields_ = [
-        ("set_mode", ctypes.c_uint8),
-        ("mode", ctypes.c_uint8),
-        ("padding", ctypes.c_uint8 * 6),
+        ("set_driver_mode", ctypes.c_uint8),
+        ("driver_mode", ctypes.c_uint8),
+        ("set_dither_mode", ctypes.c_uint8),
+        ("dither_mode", ctypes.c_uint8),
+        ("redraw_delay", ctypes.c_uint16),
+        ("set_redraw_delay", ctypes.c_uint8),
+        ("_pad", ctypes.c_uint8),
     ]
 
+class zero_waveform(ctypes.Structure):
+    _fields_ = [
+        ("set_zero_waveform_mode", ctypes.c_uint8),
+        ("zero_waveform_mode", ctypes.c_uint8),
+        ("_pad", ctypes.c_uint8 * 6),
+    ]
 
 _IOC_NRBITS = 8
 _IOCtype_BITS = 8
@@ -136,6 +161,7 @@ DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN = DRM_IOW(DRM_COMMAND_BASE + 1, off_screen)
 DRM_IOCTL_ROCKCHIP_EBC_EXTRACT_FBS = DRM_IOWR(DRM_COMMAND_BASE + 2, extract_fbs)
 DRM_IOCTL_ROCKCHIP_EBC_RECT_HINTS = DRM_IOW(DRM_COMMAND_BASE + 3, rect_hints)
 DRM_IOCTL_ROCKCHIP_EBC_MODE = DRM_IOWR(DRM_COMMAND_BASE + 4, mode)
+DRM_IOCTL_ROCKCHIP_EBC_ZERO_WAVEFORM = DRM_IOWR(DRM_COMMAND_BASE + 5, zero_waveform)
 filename = '/dev/dri/by-path/platform-fdec0000.ebc-card'
 direct_mode_parameter = '/sys/module/rockchip_ebc/parameters/direct_mode'
 
@@ -143,7 +169,7 @@ def global_refresh():
     with open(filename, 'w+b', buffering=0) as fd:
         r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH, trigger_global_refresh(True))
 
-def set_off_screen(off_screen_path: Path):
+def set_off_screen(off_screen_path: Path, out_path: Path | None):
     from PIL import Image
     import numpy as np
     img = Image.open(off_screen_path).convert(mode='L', colors=16)
@@ -153,10 +179,13 @@ def set_off_screen(off_screen_path: Path):
         img = img.resize(SCREEN_DIMS)
     img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     arr = np.array(img, np.uint8) >> 4
-    buf_off_screen = ctypes.create_string_buffer(arr.tobytes(), SCREEN_DIMS[0] * SCREEN_DIMS[1])
-    _off_screen = off_screen(ptr_screen_content=ctypes.cast(buf_off_screen, ctypes.POINTER(ctypes.c_char_p)))
-    with open(filename, 'w+b', buffering=0) as fd:
-        r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN, _off_screen)
+    if out_path:
+        Path(out_path).write_bytes(arr.tobytes())
+    else:
+        buf_off_screen = ctypes.create_string_buffer(arr.tobytes(), SCREEN_DIMS[0] * SCREEN_DIMS[1])
+        _off_screen = off_screen(ptr_screen_content=ctypes.cast(buf_off_screen, ctypes.POINTER(ctypes.c_char_p)))
+        with open(filename, 'w+b', buffering=0) as fd:
+            r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_OFF_SCREEN, _off_screen)
 
 def extract_fbs_to_dir(parent_path: Path):
     num_pixels = SCREEN_DIMS[0] * SCREEN_DIMS[1]
@@ -194,15 +223,24 @@ def extract_fbs_to_dir(parent_path: Path):
 def set_rect_hint(_rect_hint: rect_hint):
     set_rect_hints([_rect_hint])
 
-def set_mode(_mode: int):
-    with open(filename, 'w+b', buffering=0) as fd:
-        r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_MODE, mode(set_mode=1, mode=_mode))
-
-def get_mode() -> int:
-    _mode = mode(set_mode=0)
+def set_mode_inf(driver_mode: DriverMode | None = None,
+                 dither_mode: DitherMode | None = None,
+                 redraw_delay: int | None = None):
+    _mode = mode(set_driver_mode=driver_mode is not None,
+                 driver_mode=driver_mode or 0,
+                 set_dither_mode=dither_mode is not None,
+                 dither_mode=dither_mode or 0,
+                 redraw_delay=redraw_delay or 0,
+                 set_redraw_delay=redraw_delay is not None)
     with open(filename, 'w+b', buffering=0) as fd:
         r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_MODE, _mode)
-    return _mode.mode
+
+def get_mode_inf() -> ModeInf:
+    _mode = mode(set_driver_mode=False, set_dither_mode=False, set_redraw_delay=False)
+    with open(filename, 'w+b', buffering=0) as fd:
+        r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_MODE, _mode)
+    return ModeInf(driver_mode=_mode.driver_mode, dither_mode=_mode.dither_mode,
+                   redraw_delay=_mode.redraw_delay)
 
 def set_rect_hints(_rect_hints: list[rect_hint], default_hint : int | None = None):
     _rhs = (rect_hint * len(_rect_hints))(*_rect_hints)
@@ -212,3 +250,14 @@ def set_rect_hints(_rect_hints: list[rect_hint], default_hint : int | None = Non
                              rect_hints=ctypes.cast(_rhs, ctypes.POINTER(rect_hint)))
     with open(filename, 'w+b', buffering=0) as fd:
         r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_RECT_HINTS, arg)
+
+def set_zero_waveform(enable: bool):
+    _zero_waveform = zero_waveform(set_zero_waveform_mode=True, zero_waveform_mode=enable)
+    with open(filename, 'w+b', buffering=0) as fd:
+        r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_ZERO_WAVEFORM, _zero_waveform)
+
+def get_zero_waveform() -> bool:
+    _zero_waveform = zero_waveform(set_zero_waveform_mode=False)
+    with open(filename, 'w+b', buffering=0) as fd:
+        r = fcntl.ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_ZERO_WAVEFORM, _zero_waveform)
+    return bool(_zero_waveform.zero_waveform_mode)
