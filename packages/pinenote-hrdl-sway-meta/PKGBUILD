@@ -10,8 +10,8 @@ url="https://git.sr.ht/~hrdl/pinenote-shared"
 depends=(
   sway swaybg swayidle wtype waybar squeekboard network-manager-applet
   squeekboard nwg-menu 
-  lisgd lisgd-debug
-  rot8-git rot8-git-debug iio-sensor-proxy
+  lisgd
+  rot8-git iio-sensor-proxy
   jq brightnessctl
   greetd greetd-gtkgreet
   python-numpy python-pillow python-dbus-next python-i3ipc python-pydbus
