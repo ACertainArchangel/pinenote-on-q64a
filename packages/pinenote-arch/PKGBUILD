@@ -50,6 +50,7 @@ package() {
     install -Dm755 sway_dbus_integration.py -t "${pkgdir}/usr/bin"
     install -Dm755 rockchip_ebc_dump_buffers.py -t "${pkgdir}/usr/bin"
     install -Dm755 sway_hrdl waybar_hrdl -t "${pkgdir}/usr/bin"
+    install -Dm755 cyttsp5_update_config.py -t "${pkgdir}/usr/bin"
   )
 
   install -Dm644 cache/nwg-pin-cache -t "${pkgdir}/etc/skel/.cache"
