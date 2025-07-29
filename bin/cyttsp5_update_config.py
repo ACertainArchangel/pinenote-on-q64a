@@ -83,20 +83,29 @@ def read_config():
         block_idx += 1
     return config
 
+def write_config_block(block_idx, data):
+    crc = crcmod.predefined.PredefinedCrc("crc-ccitt-false").new()
+    crc.update(data)
+    cmd_buf = struct.pack('<HHB', block_idx, len(data), 0) + data + CYTTSP5_SECURITY_KEY + crc.digest()[::-1]
+    resp = send(CMD_WRITE_CONF_BLOCK, cmd_buf)
+    if resp[5] != 0:
+        raise ValueError('Write command failed')
+
 def write_config(config):
     block_idx = 0
     bytes_written = 0
     while bytes_written < len(config):
         write_length = min(BLOCK_SIZE, len(config) - bytes_written )
         data = config[BLOCK_SIZE * block_idx:][:write_length]
-        crc = crcmod.predefined.PredefinedCrc("crc-ccitt-false").new()
-        crc.update(data)
-        cmd_buf = struct.pack('<HHB', block_idx, write_length, 0) + data + CYTTSP5_SECURITY_KEY + crc.digest()[::-1]
-        resp = send(CMD_WRITE_CONF_BLOCK, cmd_buf)
-        if resp[5] != 0:
-            raise ValueError('Write command failed')
+        write_config_block(block_idx, data)
         block_idx += 1
         bytes_written += write_length
+
+def write_config_first_and_last_block(config):
+    write_config_block(0, config[:BLOCK_SIZE])
+    last_block_idx = (len(config) + BLOCK_SIZE - 1) // BLOCK_SIZE - 1
+    if last_block_idx > 0:
+        write_config_block(last_block_idx, config[BLOCK_SIZE * last_block_idx:])
 
 def verify_crc():
     resp = send(CMD_VERIFY_CONFIG_BLOCK_CRC, bytes([0]))
@@ -119,5 +128,5 @@ if __name__ == '__main__':
     with open(f'config_{config[0x42]}_{config[-2:].hex()}.bin', 'wb') as f:
         f.write(config)
 
-    write_config(config)
+    write_config_first_and_last_block(config)
     verify_crc()
