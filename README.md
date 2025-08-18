@@ -39,6 +39,33 @@ To create a preconfigured distribution image:
 
 ## Modifications
 
+### (Re)drawing behaviour
 To change a wayland-native application's rendering behaviour, configure its `app_id` (`swaymsg -t get_tree |grep app_id`) statically in `/usr/bin/sway_dbus_integration.py` or configure it via dbus. See `sway_dbus_integration.py` for details.
 
+### Installation to another partition
 To install to another partition, modify `/boot/extlinux/extlinux.conf`.
+
+### Pen buttons (developer edition)
+To map double and triple button presses for the developer edition's BLE pen, ensure `ws8100-pen.ko` is loaded, install aur/evsieve, and adopt [setup_evsieve.sh](https://raw.githubusercontent.com/PNDeb/pinenote-debian-image/e83669307593938b202805549059d0516a8d09f5/overlays/root/setup_evsieve.sh).
+
+### Larger text
+The output scale can be set in `/etc/sway_hrdl/sway/config` (default: `output * scale 1`). However, non-integer scale factors result in noticable worse performance e.g. when using xournalpp. Instead font sizes can be increased on a per-framework / per-application level:
+
+```
+# GTK3
+gsettings set org.gnome.desktop.interface font-name 'Adwaita Sans 15'
+
+# Kitty
+echo font_size 15 >> ~/.config/kitty/kitty.conf
+```
+
+### Bluetooth
+For CLI usage: `sudo pacman -Sy bluez-tools; systemctl enable --now bluetooth` and configure va `bluetoothctl`. For a GUI approach: `sudo pacman -Sy blueman`, run `systemctl enable --now bluetooth`, and run `blueman-manager`, optionally adding something like
+
+```
+exec blueman-applet
+# Optional, for a floating blueman-manager window
+# for_window [app_id="blueman-manager"] floating enable
+```
+
+to `/etc/sway_hrdl/sway/config`.
