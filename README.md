@@ -69,3 +69,6 @@ exec blueman-applet
 ```
 
 to `/etc/sway_hrdl/sway/config`.
+
+### Waybar font unreadable
+Run `sudo pacman -Sy otf-font-awesome` to install `otf-font-awesome`.
