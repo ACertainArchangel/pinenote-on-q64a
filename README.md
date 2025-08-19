@@ -32,8 +32,8 @@ To create a preconfigured distribution image:
 ## First boot
 
 1. Extract image onto `os2`. Make sure it has a suitable filesystem.
-  - `mount /dev/disk/by-partlabel/os2 /mnt && tar -xf arch.tar.zst -C /mnt`
-2. If you don't have a waveform partition, copy your waveform to `/mnt/usr/lib/firmware/rockchip`
+  - `sudo sh -c 'mount /dev/disk/by-partlabel/os2 /mnt && tar -xf arch.tar.zst -C /mnt && sync'`
+2. If you don't have a waveform partition, copy your waveform to `/mnt/usr/lib/firmware/rockchip/`
 3. Reboot into os2. During the first boot `ebc.wbf` is extracted from the waveform partition, converted to `custom_wf.bin`, included in a new initial ramfs, and a new user `archuser` with password `password` is created and logged in automatically.
 4. Change the passwords for `archuser`, `user`, and `root` (default password: `rootpass`). To disable passwordless login, remove `nopasswdlogin` from `user` and `archuser` and remove `initial_session.user` from `/etc/greetd/config.toml`.
 
