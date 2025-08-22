@@ -29,6 +29,8 @@ To create a preconfigured distribution image:
   - `xournalpp-git`: better multitouch and reduced damage regions in menu
 3. Build `arch.tar.zst` on an `aarch64` device: `cd mkosi; mkosi`
 
+A 666 MiB pre-built image and its signature can be downloaded from `https://files.hrdl.eu/arch.tar.zst{,sig}`. This string contains two URLs.
+
 ## First boot
 
 1. Extract image onto `os2`. Make sure it has a suitable filesystem.
