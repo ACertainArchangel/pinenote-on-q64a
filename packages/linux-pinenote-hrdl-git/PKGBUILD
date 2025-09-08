@@ -1,7 +1,7 @@
 # Maintainer: hrdl <git@hrdl.eu>
 
 pkgname=linux-pinenote-hrdl-git
-pkgver=6.15.0_rc3_00349_gb0e82d0f7a25
+pkgver=6.17.rc5.r341.g1a119bb3028b
 pkgrel=1
 pkgdesc="Linux kernel for PineNote"
 arch=(aarch64)
@@ -9,7 +9,7 @@ url="https://git.sr.ht/~hrdl/linux"
 license=(GPL-2.0-only)
 makedepends=(git clang llvm lld bc)
 source=(
-  git+https://git.sr.ht/~hrdl/linux#branch=hrdl-pinenote-6.15rc3
+  git+https://git.sr.ht/~hrdl/linux#branch=v6.17-rc5_pinenote
   linux-pinenote-hrdl.preset
   mkinitcpio.conf)
 sha256sums=('SKIP'
@@ -26,7 +26,7 @@ CARCH=aarch64
 
 pkgver() {
   cd "$srcdir/linux"
-  make -s kernelrelease | sed 's/-/_/g'
+  git describe --long --tags |sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 prepare() {
