@@ -1,8 +1,8 @@
 # Maintainer: hrdl <git@hrdl.eu>
 
 pkgname=pinenote-arch
-pkgver=0.1
-pkgrel=4
+pkgver=0.2
+pkgrel=2
 pkgdesc="Scripts and configurations for the Pine64 PineNote and hrdl's rockchip_ebc driver"
 arch=(any)
 license=(GPL3)
