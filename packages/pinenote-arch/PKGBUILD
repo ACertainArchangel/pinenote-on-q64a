@@ -9,6 +9,20 @@ license=(GPL3)
 url="https://git.sr.ht/~hrdl/pinenote-dist"
 depends=()
 optdepends=()
+backup=('etc/libinput/local-overrides.quirks'
+        'etc/modprobe.d/rockchip_ebc.conf'
+        'etc/modprobe.d/wifi.conf'
+        'etc/udev/rules.d/81-libinput-pinenote.rules'
+        'etc/udev/rules.d/83-backlight.rules'
+        'etc/udev/rules.d/84-rockchip-ebc-power.rules'
+        'etc/greetd/environments'
+        'etc/sway_hrdl/sway/colorscheme'
+        'etc/sway_hrdl/sway/config'
+        'etc/sway_hrdl/waybar/config'
+        'etc/sway_hrdl/waybar/style.css'
+        'etc/sway_hrdl/nwg-panel/menu-start.css'
+        'usr/bin/launch_lisgd.sh'
+        'usr/bin/sway_dbus_integration.py')
 #source=("git+https://git.sr.ht/~hrdl/pinenote-shared.git")
 #sha256sums=('SKIP')
 

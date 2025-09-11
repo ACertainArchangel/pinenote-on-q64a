@@ -8,6 +8,7 @@ arch=(aarch64)
 url="https://git.sr.ht/~hrdl/linux"
 license=(GPL-2.0-only)
 makedepends=(git clang llvm lld bc)
+backup=('etc/mkinitcpio.conf' 'etc/mkinitcpio.d/linux-pinenote-hrdl-git.preset')
 source=(
   git+https://git.sr.ht/~hrdl/linux#branch=v6.17-rc5_pinenote
   linux-pinenote-hrdl.preset
