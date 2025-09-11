@@ -13,7 +13,7 @@ startlisgd() {
 }
 
 rotnormal() {
-	swaymsg -- output "-" transform 0 scale 1
+	swaymsg -- output "-" transform 0
 	focused_name="$(focusedname)"
 	swaymsg -- input type:touch map_to_output "$focused_name"
 	swaymsg -- input type:tablet_tool map_to_output "$focused_name"
@@ -22,7 +22,7 @@ rotnormal() {
 }
 
 rotleft() {
-	swaymsg -- output "-" transform 90 scale 1
+	swaymsg -- output "-" transform 90
 	focused_name="$(focusedname)"
 	swaymsg -- input type:touch map_to_output "$focused_name"
 	swaymsg -- input type:tablet_tool map_to_output "$focused_name"
@@ -31,7 +31,7 @@ rotleft() {
 }
 
 rotright() {
-	swaymsg -- output "-" transform 270 scale 1
+	swaymsg -- output "-" transform 270
 	focused_name="$(focusedname)"
 	swaymsg -- input type:touch map_to_output "$focused_name"
 	swaymsg -- input type:tablet_tool map_to_output "$focused_name"
@@ -40,7 +40,7 @@ rotright() {
 }
 
 rotinvert() {
-	swaymsg -- output "-" transform 180 scale 1
+	swaymsg -- output "-" transform 180
 	focused_name="$(focusedname)"
 	swaymsg -- input type:touch map_to_output "$focused_name"
 	swaymsg -- input type:tablet_tool map_to_output "$focused_name"
