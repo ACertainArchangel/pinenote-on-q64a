@@ -39,9 +39,9 @@ A 666 MiB pre-built image and its signature can be downloaded from `https://file
 3. Reboot into os2. During the first boot `ebc.wbf` is extracted from the waveform partition, converted to `custom_wf.bin`, included in a new initial ramfs, and a new user `archuser` with password `password` is created and logged in automatically.
 4. Change the passwords for `archuser`, `user`, and `root` (default password: `rootpass`). To disable passwordless login, remove `nopasswdlogin` from `user` and `archuser` and remove `initial_session.user` from `/etc/greetd/config.toml`.
 5. Optionally, configure hrdl's repository to receive kernel updates, precompiled AUR updates (`xournalpp-git` in particular), and sway/dbus-related integrations:
-- 1. Add hrdl's key: `sudo pacman-key --recv-keys A759E2F745AE017764D35BF8AC50F8C2F0157FEA` or `curl https://meta.sr.ht/~hrdl.pgp |sudo pacman-key --add`
-- 2. Sign hrdl's key: `sudo pacman-key --lsign-key A759E2F745AE017764D35BF8AC50F8C2F0157FEA`
-- 3. Add the repository: `echo '[hrdl]\nServer = https://files.hrdl.eu/pnrepo' |sudo tee -a /etc/pacman.conf`
+    1. Add hrdl's key: `sudo pacman-key --recv-keys A759E2F745AE017764D35BF8AC50F8C2F0157FEA` or `curl https://meta.sr.ht/~hrdl.pgp |sudo pacman-key --add`
+    2. Sign hrdl's key: `sudo pacman-key --lsign-key A759E2F745AE017764D35BF8AC50F8C2F0157FEA`
+    3. Add the repository: `echo '[hrdl]\nServer = https://files.hrdl.eu/pnrepo' |sudo tee -a /etc/pacman.conf`
 
 ## Modifications
 
