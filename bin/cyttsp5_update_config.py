@@ -3,6 +3,9 @@
 # Prerequisites: uv or python modules crcmod and pylibi2c
 # Before running this script: sudo modprobe -r cyttsp5; sudo chmod o+rw /dev/i2c-5
 # After running this script successfully: sudo modprobe cyttsp5; sudo chmod o-rw /dev/i2c-5
+# When communication errors occur, try again shortly after a reboot, optionally without loading the cyttsp5 driver: echo blacklist cyttsp5 |sudo tee /etc/modprobe.d/nocyttsp5.conf
+
+# Afterwards, remove /etc/modprobe.d/nocyttsp5.conf (if created) and reboot.
 
 import struct
 import time
