@@ -2,7 +2,7 @@
 
 pkgname=pinenote-arch
 pkgver=0.2
-pkgrel=3
+pkgrel=4
 pkgdesc="Scripts and configurations for the Pine64 PineNote and hrdl's rockchip_ebc driver"
 arch=(any)
 license=(GPL3)
