@@ -1,8 +1,8 @@
 #!/usr/bin/env -S uv run --script --with pylibi2c,crcmod
 
 # Prerequisites: uv or python modules crcmod and pylibi2c
-# Before running this script: sudo modprobe -r cyttsp5; chmod o+rw /dev/i2c-5
-# After running this script successfully: sudo modprobe cyttsp5; chmod o-rw /dev/i2c-5
+# Before running this script: sudo modprobe -r cyttsp5; sudo chmod o+rw /dev/i2c-5
+# After running this script successfully: sudo modprobe cyttsp5; sudo chmod o-rw /dev/i2c-5
 
 import struct
 import time
