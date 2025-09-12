@@ -19,7 +19,7 @@ See [packages/](packages/):
 ## Distribution image
 To create a preconfigured distribution image:
 
-1. Build the packages in `packages/` and place the resulting files into `mkosi/mkosi.packages/` using `makepkg -d`.
+1. Build the packages in `packages/` and place the resulting files into `mkosi/mkosi.volatilepackages/` using `makepkg -d`.
 2. Download and build the following packages from AUR or remove them from `mkosi/mkosi.conf`:
   - `fonts-droid-fallback`
   - `fonts-noto-hinted`
@@ -27,7 +27,8 @@ To create a preconfigured distribution image:
   - `lisgd`
   - `rot8-git`
   - `xournalpp-git`: better multitouch and reduced damage regions in menu
-3. Build `arch.tar.zst` on an `aarch64` device: `cd mkosi; mkosi`
+3. On aarch64: Build `arch.tar.zst` on an `aarch64` device: `cd mkosi; mkosi`
+4. On other architectures: ensure `archlinux-keyring, archlinuxarm-keyring, qemu-system-aarch64` are installed and up-to-date, then run `cd mkosi; mkosi`
 
 A 666 MiB pre-built image and its signature can be downloaded from `https://files.hrdl.eu/arch.tar.zst{,sig}`. This string contains two URLs.
 
