@@ -5,6 +5,7 @@ systemctl enable pinenote-hrdl-extract-waveform.service pinenote-hrdl-convert-wa
 systemctl enable greetd
 systemctl enable NetworkManager
 systemctl enable pinenote-create-user@archuser
+systemctl enable fontcache-build.service
 
 dconf update
 

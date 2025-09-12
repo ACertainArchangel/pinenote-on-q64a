@@ -1,0 +1,11 @@
+[Unit]
+Description=Build font cache at initial boot
+ConditionFirstBoot=yes
+Before=display-manager.service first-boot-complete.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/fc-cache --system-only
+
+[Install]
+RequiredBy=multi-user.target

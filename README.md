@@ -43,7 +43,6 @@ A 666 MiB pre-built image and its signature can be downloaded from `https://file
     1. Add hrdl's key: `sudo pacman-key --recv-keys A759E2F745AE017764D35BF8AC50F8C2F0157FEA` or `curl https://meta.sr.ht/~hrdl.pgp |sudo pacman-key --add`
     2. Sign hrdl's key: `sudo pacman-key --lsign-key A759E2F745AE017764D35BF8AC50F8C2F0157FEA`
     3. Add the repository: `echo '[hrdl]\nServer = https://files.hrdl.eu/pnarch' |sudo tee -a /etc/pacman.conf`
-6. In case fonts are not shown, refresh the font cache: `sudo fc-cache -s`
 
 ## Modifications
 
