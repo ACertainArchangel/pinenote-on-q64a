@@ -79,3 +79,9 @@ to `/etc/sway_hrdl/sway/config`.
 
 ### Waybar font unreadable
 Run `sudo pacman -Sy otf-font-awesome` to install `otf-font-awesome`.
+
+### Boot OS2 by default instead of OS1
+```
+sudo pacman -S parted
+sudo parted --script /dev/mmcblk0 set 5 legacy_boot off set 6 legacy_boot on
+```
