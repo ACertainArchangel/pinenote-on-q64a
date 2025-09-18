@@ -2,9 +2,11 @@
 
 killall lisgd || true
 lisgd -d /dev/input/by-path/platform-fe5e0000.i2c-event \
+    -g "1,RL,R,S,P,swaymsg bar hidden_state show bar-ctrl" \
+    -g "1,LR,R,S,P,swaymsg bar hidden_state hide bar-ctrl" \
     -g "4,DU,*,*,R,xournalpp &" \
     -g "3,DU,*,*,R,toggle_onscreen_keyboard.py &" \
-    -g "3,UD,*,*,R,dbus-send --type=method_call --dest=org.pinenote.ebc_custom / org.pinenote.ebc_custom.GlobalRefresh &" \
+    -g "3,UD,*,*,R,busctl --user call org.pinenote.PineNoteCtl /org/pinenote/PineNoteCtl org.pinenote.Ebc1 GlobalRefresh &" \
     -g "3,LR,*,*,R,sway_workspace goto prev &" \
     -g "3,RL,*,*,R,sway_workspace goto next &" \
     -g "4,LR,*,*,R,sway_workspace move prev &" \

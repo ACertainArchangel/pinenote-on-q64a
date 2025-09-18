@@ -4,6 +4,20 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+#
+# Setup pinenote-config-sway.
+#
+# This is a waybar & sway configuration fragment with a quick-setting side bar,
+# as well as a way to set per-window rendering hints via pinenote-service.
+#
+# All $pn_* variables are defined in the pinenote.config fragment.
+#
+# For configuration option, see the readme at
+# https://git.sr.ht/~phantomas/pinenote-config-sway
+#
+set $pn_config_root "/usr/share/pinenote-config/"
+include "$pn_config_root/sway/pinenote.config"
+
 # Unlike Mod4 (logo key), Mod1 (Alt) works with squeekboard without custom layout
 set $mod Mod1
 
@@ -19,7 +33,21 @@ set $term kitty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu "toggle_menu.sh"
+set $menu toggle_menu.sh
+
+#
+# A script to toggle the onscreen keyboard.
+#
+# pinenote-config-sway come with it's default value, but will use this variable
+# if redefined.
+# set $toggle_osk toggle_onscreen_keyboard.py
+
+#
+# Define a script to (re-)start the gestures service.
+#
+# pinenote-config-sway defines a default script, but will use this variable if
+# redefined.
+set $gestures_service launch_lisgd.sh
 
 font pango:Noto Sans 20
 
@@ -230,18 +258,56 @@ bindsym $mod+r mode "resize"
 #     }
 # }
 
+#
+# Setup waybar as the top status bar.
+#
 bar {
     position top
-    swaybar_command waybar_hrdl
+    swaybar_command $pn_waybar
+    pango_markup enable
 }
+
+#
+# Setup a secondary side-bar.
+#
+# This side bar contains your backlight & sound settings, quick toggle for
+# radios and default rendering values.
+#
+# With the default lisgd configuration, swipe left from the right edge of the
+# screen to display the bar.
+#
+bar bar-ctrl {
+    swaybar_command /bin/true
+    mode hide
+    pango_markup enable
+}
+
+#
+# Start both the gestures and rotation service.
+#
+exec_always --no-startup-id $gestures_service
+exec --no-startup-id $pn_rotate_service start
 
 exec --no-startup-id nm-applet --indicator &
 exec --no-startup-id squeekboard & 
 
-exec --no-startup-id sway_rotate.sh rotnormal
-
-exec_always --no-startup-id launch_lisgd.sh
-exec_always --no-startup-id flock -n .sway_dbus_integration.lock sway_dbus_integration.py
-exec rot8 --hooks launch_lisgd.sh --display DPI-1 --invert-x
+#
+# Override default render hint for well known apps.
+#
+# The string after the 'set' argument define the render hint as
+# <bitdepth>[|<conversion>][|<mode>].
+#
+# - bitdepth is one of Y1 (1bpp), Y2 (2bpp), Y4 (4bpp)
+# - convert is one of D (dither) or T (threshold)
+# - if render is set to R, 2 pass rendering is enabled.
+#
+for_window [app_id="mpv"] exec $pn_ebcmark set "Y1|D" silent
+for_window [app_id="KOReader"] exec $pn_ebcmark set "Y4" silent
+for_window [app_id="kitty"] exec $pn_ebcmark set "Y2|R" silent
+for_window [app_id="com.github.xournalpp.xournalpp"] exec $pn_ebcmark set "Y4|R" silent
+for_window [app_id="firefox"] exec $pn_ebcmark set "Y4|R" silent
+for_window [app_id="org.qutebrowser.qutebrowser"] exec $pn_ebcmark set "Y4|R" silent
+for_window [app_id="mepo"] exec $pn_ebcmark set "Y4|R" silent
+for_window [app_id="imv"] exec $pn_ebcmark set "Y4|R" silent
 
 include /etc/sway/config.d/*
