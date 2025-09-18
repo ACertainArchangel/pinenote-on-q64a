@@ -1,0 +1,24 @@
+pkgbase = pinenote-config-sway
+	pkgdesc = Sway/waybar config & service integration
+	pkgver = v1.1.0
+	pkgrel = 2
+	url = https://git.sr.ht/~phantomas/pinenote-config-sway
+	arch = any
+	license = GPL-3.0-or-later
+	source = pinenote-config-sway-v1.1.0.tar.gz::https://git.sr.ht/~phantomas/pinenote-config-sway/archive/v1.1.0.tar.gz
+	validpgpkeys = B57BD2C369535DC9E2E6B1CE54372F8BF34BAA05
+	b2sums = 6905945b8edaeaa25d1c5d6ec72b36d99a2d1c940c0c66227ad163e42dbbfd16ea771e83628efa0e73e449a02336ac2a05f07f7521c6ceb4f57547b8d7b32f16
+
+pkgname = pinenote-config-sway
+	depends = sway
+	depends = waybar
+	depends = squeekboard
+	depends = nwg-menu
+	depends = lisgd
+	depends = rot8-git
+	depends = iio-sensor-proxy
+	depends = jq
+	depends = brightnessctl
+	depends = pinenote-service
+	depends = ttf-nerd-fonts-symbols
+	depends = otf-font-awesome

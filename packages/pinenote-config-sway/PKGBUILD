@@ -1,0 +1,60 @@
+# Maintainer: phantomas <phantomas@phantomas.xyz>
+
+buildarch=8
+
+pkgname=pinenote-config-sway
+pkgver=v1.1.0
+pkgrel=2
+pkgdesc="Sway/waybar config & service integration"
+arch=('any')
+url="https://git.sr.ht/~phantomas/pinenote-config-sway"
+license=(GPL-3.0-or-later)
+source=(
+    "${pkgname}-${pkgver}.tar.gz::https://git.sr.ht/~phantomas/pinenote-config-sway/archive/${pkgver}.tar.gz"
+)
+
+validpgpkeys=(B57BD2C369535DC9E2E6B1CE54372F8BF34BAA05)
+b2sums=(
+    '6905945b8edaeaa25d1c5d6ec72b36d99a2d1c940c0c66227ad163e42dbbfd16ea771e83628efa0e73e449a02336ac2a05f07f7521c6ceb4f57547b8d7b32f16'
+)
+
+package() {
+    depends=(
+        sway
+        waybar
+        squeekboard
+        nwg-menu
+        lisgd
+        rot8-git iio-sensor-proxy
+        jq
+        brightnessctl
+        pinenote-service
+        ttf-nerd-fonts-symbols
+        otf-font-awesome
+    )
+
+    cd "${pkgname}-${pkgver}"
+
+    local dest_root="${pkgdir}/usr/share/pinenote-config/"
+    local sway_root="${dest_root}/sway"
+    local waybar_root="${dest_root}/waybar"
+
+    # Install sway scripts
+    install -d "${sway_root}/scripts"
+    install -Dm755 sway/scripts/* "${sway_root}/scripts"
+
+    # Install sway's config fragment
+    install -Dm644 sway/pinenote.config -t "${sway_root}"
+    install -Dm644 sway/pinenote-start.config -t "${sway_root}"
+
+    # Install waybar scripts
+    install -d "${waybar_root}/scripts"
+    install -Dm755 waybar/scripts/* "${waybar_root}/scripts"
+
+    # Install waybar's config
+    install -d "${waybar_root}/modules"
+    install -Dm644 waybar/modules/* "${waybar_root}/modules"
+
+    install -Dm644 waybar/config -t "${waybar_root}"
+    install -Dm644 waybar/style.css -t "${waybar_root}"
+}
