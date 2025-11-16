@@ -7,6 +7,17 @@ This repository contains all utilities required to create an Arch Linux system f
 - `greetd`, `sway`, `gtkgreet`, and `squeekboard` as greeter,
 - `sway, waybar, nwg-menu, squeekboard` including an integration with the `rockchip_ebc` driver via `ioctl`, `dbus`, and `sway IPC`.
 
+## Migration from ALARM to unofficial aarch64 Arch Linux port
+
+1. Download and locally sign drzee's packaging key
+```
+curl https://arch-linux-repo.drzee.net/arch/extra/os/aarch64/public.key |sudo pacman-key --add
+sudo pacman-key --lsign-key 9B2C213B21883BB65CE2FB900CF25682E6BA0751
+```
+2. Replace AUR mirror in `/etc/pacman.d/mirrorlist` with `https://arch-linux-repo.drzee.net/arch/$repo/os/$arch`
+3. Remove repositories / sections `[aur]` and `[alarm]` from `/etc/pacman.conf`
+4. Reinstall all packages: `pacman -Qqn |sudo pacman -Sy -`
+
 ## Custom packages:
 See [packages/](packages/):
 
