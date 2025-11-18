@@ -28,7 +28,9 @@ See [packages/](packages/):
 - [pneink-theme-git](packages/pneink-theme-git): a package for https://github.com/PNDeb/PNEink
 
 ## Distribution image
-To create a preconfigured distribution image:
+To create a preconfigured distribution image, ensure `archlinux-keyring, mkosi, qemu-system-aarch64` are installed. To use precompiled packages built and signed by `hrdl`'s, simply run `cd mkosi; mkosi`.
+
+To create a preconfigured distribution image without relying on `hrdl`'s prebuilt packages and repositories:
 
 1. Build the packages in `packages/` and place the resulting files into `mkosi/mkosi.volatilepackages/` using `makepkg -d`.
 2. Download and build the following packages from AUR or remove them from `mkosi/mkosi.conf`:
@@ -38,10 +40,10 @@ To create a preconfigured distribution image:
   - `lisgd`
   - `rot8-git`
   - `xournalpp-git`: better multitouch and reduced damage regions in menu
-3. On aarch64: Build `arch.tar.zst` on an `aarch64` device: `cd mkosi; mkosi`
-4. On other architectures: ensure `archlinux-keyring, archlinuxarm-keyring, qemu-system-aarch64` are installed and up-to-date, then run `cd mkosi; mkosi`
+3. Remove the reference to `hrdl`'s key from `mkosi/mkosi.finalize.chroot`, remove `hrdl` repository/section from `mkosi/mkosi.sandbox/etc/pacman.conf`, and remove `mkosi/mkosi.sandbox/usr/share/pacman/keyrings/hrdl-trusted`.
+4. Ensure `archlinux-keyring, mkosi, qemu-system-aarch64` are installed. To use precompiled packages built and signed by `hrdl`'s, simply run `cd mkosi; mkosi`.
 
-A 666 MiB pre-built image and its signature can be downloaded from `https://files.hrdl.eu/arch.tar.zst{,sig}`. This string contains two URLs.
+A 709 MiB image can be downloaded from `https://files.hrdl.eu/arch_nonalarm.tar.zst{,sig}`. This string contains two URLs. A 769 MiB pre-built ALARM image and its signature can be downloaded from `https://files.hrdl.eu/arch.tar.zst{,sig}`. This string contains two URLs.
 
 ## First boot
 
