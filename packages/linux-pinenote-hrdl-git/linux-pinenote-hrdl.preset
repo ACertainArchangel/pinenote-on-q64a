@@ -1,4 +1,4 @@
 ALL_config="/etc/mkinitcpio.conf.d/%PKGBASE%.conf"
-ALL_kver="%KERNVER%"
+ALL_kver="/boot/Image"
 PRESETS=('default')
 default_image="/boot/initramfs-linux.img"
