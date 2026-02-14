@@ -1,7 +1,7 @@
 # Maintainer: hrdl <git@hrdl.eu>
 
 pkgname=linux-pinenote-hrdl-git
-pkgver=6.19.rc1.r346.g6515b53ee928
+pkgver=6.19.r349.g46028a0e2658
 pkgrel=1
 pkgdesc="Linux kernel for PineNote"
 arch=(aarch64)
@@ -10,7 +10,7 @@ license=(GPL-2.0-only)
 makedepends=(git clang llvm lld bc)
 backup=("etc/mkinitcpio.conf.d/${pkgname}.conf")
 source=(
-  git+https://git.sr.ht/~hrdl/linux#branch=v6.19-rc1_pinenote
+  git+https://git.sr.ht/~hrdl/linux#branch=v6.19_pinenote
   linux-pinenote-hrdl.preset
   mkinitcpio.conf)
 sha256sums=('SKIP'
