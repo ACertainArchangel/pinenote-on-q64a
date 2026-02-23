@@ -10,4 +10,4 @@ systemctl enable fontcache-build.service
 dconf update
 
 pacman-key --init
-pacman-key --populate drzee hrdl
+pacman-key --populate archlinux drzee hrdl
