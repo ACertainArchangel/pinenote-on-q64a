@@ -28,7 +28,36 @@ See [packages/](packages/):
 - [pneink-theme-git](packages/pneink-theme-git): a package for https://github.com/PNDeb/PNEink
 
 ## Distribution image
-To create a preconfigured distribution image, ensure `archlinux-keyring, mkosi, qemu-system-aarch64` are installed. To use precompiled packages built and signed by `hrdl`'s, simply run `cd mkosi; mkosi`.
+To create a preconfigured distribution image, ensure `archlinux-keyring, mkosi, qemu-system-aarch64` are installed. The image is based on the [unofficial aarch64 Arch Linux port](https://ports.archlinux.page/aarch64/).
+
+### Compressed archive for partition 6
+This method creates a compressed archive `arch_nonalarm_p6.tar.zst` that can be extracted on partition 6 on the standard partition layout. To use `hrdl`'s binary package mirror, simply run `cd mkosi; mkosi`.
+The resulting file `arch_nonalarm_p6.tar.zst` needs to be extracted to `os2`. Make sure it has a suitable filesystem.
+
+```
+sudo sh -c 'mount /dev/disk/by-partlabel/os2 /mnt && tar -xf arch_nonalarm_p6.tar.zst -C /mnt && sync
+```
+
+A ~700 MiB tar file can be downloaded from `https://files.hrdl.eu/arch_nonalarm_p6.tar.zst{,sig}`. This string contains two URLs.
+An older 769 MiB pre-built ALARM image and its signature can be downloaded from `https://files.hrdl.eu/arch.tar.zst{,sig}`. This string contains two URLs.
+
+### `rkdeveloptool`-flashable image for partition 6
+
+This method is recommended when `os1` is not bootable. To use `hrdl`'s binary package mirror, run `cd mkosi; mkosi --profile arch_p6_image`.
+
+Make sure partition 6 (`p6`) correponds to `os2` and can be written using
+
+```
+# Use the partition image, not the disc image
+test -f arch_nonalarm_p6.img.root-arm64 && mv arch_nonalarm_p6.img.root-arm64 arch_nonalarm_p6.img
+# Decompress if the image was compressed
+test -f arch_nonalarm_p6.img || zstd --decompress --rm arch_nonalarm_p6.img.zst
+rkdeveloptool write-partition os2 arch_nonalarm_p6.img
+```
+
+A TODO MiB rkdeveloptool-flashable image can be downloaded from `https://files.hrdl.eu/arch_nonalarm_p6.img.zst{,sig}`. This string contains two URLs.
+
+### Building without `hrdl`'s repository, key, and binary packages
 
 To create a preconfigured distribution image without relying on `hrdl`'s prebuilt packages and repositories:
 
@@ -40,16 +69,13 @@ To create a preconfigured distribution image without relying on `hrdl`'s prebuil
   - `lisgd`
   - `rot8-git`
 3. Remove the reference to `hrdl`'s key from `mkosi/mkosi.finalize.chroot`, remove `hrdl` repository/section from `mkosi/mkosi.sandbox/etc/pacman.conf`, and remove `mkosi/mkosi.sandbox/usr/share/pacman/keyrings/hrdl-trusted`.
-4. Ensure `archlinux-keyring, mkosi, qemu-system-aarch64` are installed. To use precompiled packages built and signed by `hrdl`'s, simply run `cd mkosi; mkosi`.
-
-A 709 MiB image can be downloaded from `https://files.hrdl.eu/arch_nonalarm.tar.zst{,sig}`. This string contains two URLs. A 769 MiB pre-built ALARM image and its signature can be downloaded from `https://files.hrdl.eu/arch.tar.zst{,sig}`. This string contains two URLs.
+4. Ensure `archlinux-keyring, mkosi, qemu-system-aarch64` are installed. Use the build instructions above.
 
 ## First boot
 
-1. Extract image onto `os2`. Make sure it has a suitable filesystem.
-    - `sudo sh -c 'mount /dev/disk/by-partlabel/os2 /mnt && tar -xf arch.tar.zst -C /mnt && sync'`
-2. If you don't have a waveform partition, copy your waveform to `/mnt/usr/lib/firmware/rockchip/`
-3. Reboot into os2. During the first boot `ebc.wbf` is extracted from the waveform partition, converted to `custom_wf.bin`, included in a new initial ramfs, and a new user `archuser` with password `password` is created and logged in automatically.
+1. If you don't have a waveform partition, copy your waveform to `/mnt/usr/lib/firmware/rockchip/`
+2. Reboot into os2. During the first boot `ebc.wbf` is extracted from the waveform partition, converted to `custom_wf.bin`, included in a new initial ramfs, and a new user `archuser` with password `password` is created and logged in automatically.
+3. If you used `rkdeveloptool` to flash the image, run `sudo systemctl start systemd-growfs-root`
 4. Change the passwords for `archuser`, `user`, and `root` (default password: `rootpass`). To disable passwordless login, remove `nopasswdlogin` from `user` and `archuser` and remove the entire `initial_session` section from `/etc/greetd/config.toml`.
 5. Optionally, configure hrdl's repository to receive kernel updates, precompiled AUR updates, and sway/dbus-related integrations:
     1. Add hrdl's key: `sudo pacman-key --recv-keys A759E2F745AE017764D35BF8AC50F8C2F0157FEA` or `curl https://meta.sr.ht/~hrdl.pgp |sudo pacman-key --add`
