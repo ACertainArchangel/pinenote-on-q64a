@@ -55,7 +55,7 @@ test -f arch_nonalarm_p6.img || zstd --decompress --rm arch_nonalarm_p6.img.zst
 rkdeveloptool write-partition os2 arch_nonalarm_p6.img
 ```
 
-A TODO MiB rkdeveloptool-flashable image can be downloaded from `https://files.hrdl.eu/arch_nonalarm_p6.img.zst{,sig}`. This string contains two URLs.
+A ~700 MiB rkdeveloptool-flashable image can be downloaded from `https://files.hrdl.eu/arch_nonalarm_p6.img.zst{,sig}`. This string contains two URLs.
 
 ### Building without `hrdl`'s repository, key, and binary packages
 
