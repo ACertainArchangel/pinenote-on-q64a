@@ -2,7 +2,7 @@
 
 pkgname=pinenote-arch
 pkgver=0.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Scripts and configurations for the Pine64 PineNote and hrdl's rockchip_ebc driver"
 arch=(any)
 license=(GPL3)
@@ -60,7 +60,7 @@ package() {
     # install -Dm755 xournalpp_pen_enter_proximity.sh xournalpp_pen_leave_proximity.sh -t "${pkgdir}/usr/bin"
     # install -Dm755 share_tablet -t "${pkgdir}/usr/bin"
     install -Dm755 waveform_extract.sh read_file.py wbf_to_custom.py -t "${pkgdir}/usr/bin"
-    install -Dm755 rockchip_ebc_custom_ioctl.py -t "${pkgdir}/usr/lib/python3.13/site-packages"
+    install -Dm755 rockchip_ebc_custom_ioctl.py -t "${pkgdir}/usr/lib/python3.14/site-packages"
     install -Dm755 sway_dbus_integration.py -t "${pkgdir}/usr/bin"
     install -Dm755 rockchip_ebc_dump_buffers.py -t "${pkgdir}/usr/bin"
     install -Dm755 sway_hrdl waybar_hrdl -t "${pkgdir}/usr/bin"
