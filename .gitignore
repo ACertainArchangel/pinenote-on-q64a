@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+
+# Build outputs (SD image, mkosi rootfs tar, U-Boot tree + binary)
+*.img
+*.img.zst
+mkosi/arch_nonalarm_p6*
+builds/
+
+# makepkg: drop built packages, work dirs, and the cloned kernel tree.
+# Keep the PKGBUILDs and the preset/conf/patch sources.
+packages/*/*.pkg.tar.*
+packages/*/src/
+packages/*/pkg/
+packages/linux-pinenote-hrdl-git/linux/
+
+# mkosi caches + staged volatile packages — regenerated on every build.
+# Keep the .gitkeep placeholders so the dirs survive a clean checkout.
+mkosi/mkosi.cache/*
+!mkosi/mkosi.cache/.gitkeep
+mkosi/mkosi.pkgcache/*
+!mkosi/mkosi.pkgcache/.gitkeep
+mkosi/mkosi.volatilepackages/*
+!mkosi/mkosi.volatilepackages/.gitkeep
+
+readmes/

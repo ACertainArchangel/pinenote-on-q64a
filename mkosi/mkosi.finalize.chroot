@@ -9,5 +9,11 @@ systemctl enable fontcache-build.service
 
 dconf update
 
+# Quartz64-A: the build-time Include of mkosi's local repo (/etc/mkosi-local.conf) gets
+# copied into the image via ExtraTrees=mkosi.sandbox, but that file exists only in
+# the build sandbox. Drop the dangling Include so pacman-key below — and pacman on
+# the device — don't fail parsing /etc/pacman.conf.
+sed -i '\|Include = /etc/mkosi-local.conf|d' /etc/pacman.conf
+
 pacman-key --init
 pacman-key --populate archlinux drzee hrdl
