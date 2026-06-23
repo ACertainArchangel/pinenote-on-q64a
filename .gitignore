@@ -8,9 +8,10 @@ __pycache__/
 mkosi/arch_nonalarm_p6*
 builds/
 
-# makepkg: drop built packages, work dirs, and the cloned kernel tree.
-# Keep the PKGBUILDs and the preset/conf/patch sources.
+# makepkg: drop built packages, downloaded source tarballs, work dirs, and the
+# cloned kernel tree. Keep the PKGBUILDs and the preset/conf/patch sources.
 packages/*/*.pkg.tar.*
+packages/*/*.tar.gz
 packages/*/src/
 packages/*/pkg/
 packages/linux-pinenote-hrdl-git/linux/
@@ -25,3 +26,8 @@ mkosi/mkosi.volatilepackages/*
 !mkosi/mkosi.volatilepackages/.gitkeep
 
 readmes/
+
+TODO.txt
+logs.txt
+
+*decompiled.dts
