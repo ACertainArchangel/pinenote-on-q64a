@@ -1,0 +1,74 @@
+rockchip_ebc: force temperature when temp_override is set (skip i2c read)
+
+On the Quartz64-A the tps65185 temperature read (iio) intermittently times out
+at probe (-110). rockchip_ebc_upd_temp() logged the error and left
+ebc->temperature unset, so the first refresh ran with a garbage temperature,
+selecting a non-converging waveform phase -> the RT refresh thread spins in
+schedule_advance_neon (RCU stall / "RT throttling"). temp_override only helped
+once the i2c recovered, too late to matter.
+
+When temp_override > 0, bypass the i2c read entirely and use the override value,
+so a failed read at probe can no longer poison the waveform / hang the thread.
+
+--- a/drivers/gpu/drm/rockchip/rockchip_ebc.c
++++ b/drivers/gpu/drm/rockchip/rockchip_ebc.c
+@@ -1257,33 +1257,36 @@
+ 	struct drm_epd_lut_temp_v2 *lut_active = ebc->lut_custom_active;
+ 	struct drm_epd_lut_v2 *luts = &ebc->lut_custom;
+ 
+-	ret = iio_read_channel_processed(ebc->temperature_channel,
+-					 &temperature);
+-	pr_debug("%s ret=%d temperature=%d", __func__, ret, temperature);
+-
+-	if (ret < 0) {
+-		drm_err(drm, "Failed to get temperature: %d\n", ret);
++	if (temp_override > 0) {
++		/* Quartz64-A: bypass the i2c temperature read entirely when an
++		 * override is set. The tps65185 read can time out (-110) at probe,
++		 * which would otherwise leave ebc->temperature unset and hang the
++		 * refresh thread in schedule_advance_neon. Force the override. */
++		temperature = temp_override;
+ 	} else {
++		ret = iio_read_channel_processed(ebc->temperature_channel,
++						 &temperature);
++		pr_debug("%s ret=%d temperature=%d", __func__, ret, temperature);
++		if (ret < 0) {
++			drm_err(drm, "Failed to get temperature: %d\n", ret);
++			return;
++		}
+ 		// Convert from millicelsius to celsius.
+ 		temperature /= 1000;
+-		if (temp_override > 0){
+-			printk(KERN_INFO "rockchip-ebc: override temperature from %i to %i\n", temperature, temp_override);
+-			temperature = temp_override;
+-		}
+-		// Early cancellation is broken right now for lower temperatures
+-		temperature = max(temperature, 19);
+-		ebc->temperature = temperature;
++	}
++	// Early cancellation is broken right now for lower temperatures
++	temperature = max(temperature, 19);
++	ebc->temperature = temperature;
+ 
+-		// TODO: figure out exclusivity/inclusivity and lowest and highest temperature range
+-		if ((temperature < lut_active->temp_lower &&
+-		     lut_active->temp_lower != luts->luts[0].temp_lower) ||
+-		    (temperature > lut_active->temp_upper &&
+-		     lut_active->temp_upper !=
+-		     luts->luts[luts->num_temp_ranges - 1].temp_upper)) {
+-			spin_lock(&ebc->work_item_lock);
+-			ebc->work_item |= ROCKCHIP_EBC_WORK_ITEM_CHANGE_LUT;
+-			spin_unlock(&ebc->work_item_lock);
+-		}
++	// TODO: figure out exclusivity/inclusivity and lowest and highest temperature range
++	if ((temperature < lut_active->temp_lower &&
++	     lut_active->temp_lower != luts->luts[0].temp_lower) ||
++	    (temperature > lut_active->temp_upper &&
++	     lut_active->temp_upper !=
++	     luts->luts[luts->num_temp_ranges - 1].temp_upper)) {
++		spin_lock(&ebc->work_item_lock);
++		ebc->work_item |= ROCKCHIP_EBC_WORK_ITEM_CHANGE_LUT;
++		spin_unlock(&ebc->work_item_lock);
+ 	}
+ }
+ 

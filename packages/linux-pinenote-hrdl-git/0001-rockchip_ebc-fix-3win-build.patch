@@ -1,0 +1,61 @@
+rockchip_ebc: fix 3WIN build in the fast NEON path
+
+Building with CONFIG_DRM_ROCKCHIP_EBC_3WIN_MODE=y fails to compile:
+
+  rockchip_ebc_blit_neon.c: error: use of undeclared identifier 'direct_mode'
+  rockchip_ebc_blit_neon.c: error: unterminated function-like macro invocation
+                            (the vst1q_u8() store is missing a closing ')')
+
+The 3WIN path in rockchip_ebc_schedule_advance_fast_neon() was never built: it
+uses `direct_mode` without declaring it, and never mirrored the direct_mode
+handling that its sibling rockchip_ebc_schedule_advance_neon() already has.
+
+Bring it in line with the sibling: declare `bool direct_mode = ebc->direct_mode;`,
+make phase_pitch and the phases_line offset/stride direct_mode-aware, and add the
+missing paren. Every added conditional is a no-op when direct_mode is true (the
+default), so the non-3WIN path is unchanged.
+
+Found while bringing up hrdl's PineNote dist on a Quartz64-A + 10.3" e-ink panel.
+
+--- a/drivers/gpu/drm/rockchip/rockchip_ebc_blit_neon.c
++++ b/drivers/gpu/drm/rockchip/rockchip_ebc_blit_neon.c
+@@ -35,11 +35,13 @@
+ 	u8 early_cancellation_addition, u8 force_wf, u8 force_hint,
+ 	u8 force_hint_mask, bool allow_schedule)
+ {
++	bool direct_mode = ebc->direct_mode;
+ 	unsigned int pixel_pitch = ebc->pixel_pitch;
+ 	unsigned int prefetch_pitch = (pixel_pitch >> 6) << 6;
+ 	unsigned int phases_prefetch_pitch = (pixel_pitch >> 8) << 6;
+ 	// unsigned int packed_pitch = 3 * pixel_pitch;
+-	unsigned int phase_pitch = ebc->phase_pitch;
++	unsigned int phase_pitch = direct_mode ? ebc->phase_pitch :
++		ebc->pixel_pitch;
+ 	// struct drm_rect clip_ongoing_or_waiting_new = DRM_RECT_EMPTY_EXTANDABLE;
+ 
+ #ifdef ROCKCHIP_EBC_DEBUG_NEON_FAST
+@@ -72,13 +74,13 @@
+ 		int offset = y * pixel_pitch + x_start;
+ 		u8 *packed_inner_outer_nextprev_line = ebc->packed_inner_outer_nextprev + offset * 3;
+ 		u8 *phases_line =
+-			phase_buffer + y * phase_pitch + (x_start >> 2);
++			phase_buffer + y * phase_pitch + (x_start >> (direct_mode ? 2 : 0));
+ 		const u8 *prelim_target_line = prelim_target + offset;
+ 		uint32x2_t q32s_xy = vdup_n_u32(y << 16 | x_start);
+ 
+ 		for (unsigned int x = x_start; x < clip_ongoing_or_waiting->x2;
+ 		     x += 16, packed_inner_outer_nextprev_line += 48,
+-			     phases_line += 4, prelim_target_line += 16) {
++			     phases_line += direct_mode ? 4 : 16, prelim_target_line += 16) {
+ 			uint8x16x3_t q8_inner_outer_nextprev =
+ 				vld3q_u8(packed_inner_outer_nextprev_line);
+ 			/* __builtin_prefetch( */
+@@ -175,7 +177,7 @@
+ 
+ #ifdef CONFIG_DRM_ROCKCHIP_EBC_3WIN_MODE
+ 			if (!direct_mode) {
+-				vst1q_u8(phases_line, vshrq_n_u8(q8_inner_new, 6);
++				vst1q_u8(phases_line, vshrq_n_u8(q8_inner_new, 6));
+ 			} else
+ #endif
+ 			{
