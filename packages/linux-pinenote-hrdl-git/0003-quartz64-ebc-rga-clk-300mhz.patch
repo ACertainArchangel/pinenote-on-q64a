@@ -1,0 +1,17 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
+@@ -279,6 +279,14 @@
+         vcom-supply = <&vcom>;
+         vdrive-supply = <&vdrive>;
+ 
++        /* Quartz64-A: pin the rga_pre clock domain to 300 MHz so hclk_ebc (a
++         * bare gate off hclk_rga_pre) runs at 300 MHz like the PineNote, not
++         * the unpinned 150 MHz default. The EBC clocks its source-data
++         * pipeline off this bus clock; half rate underfeeds the panel.
++         * HCLK_EBC itself is an unsettable gate, so we pin its parent. */
++        assigned-clocks = <&cru ACLK_RGA_PRE>, <&cru HCLK_RGA_PRE>;
++        assigned-clock-rates = <300000000>, <300000000>;
++
+         port {
+ 			ebc_out_panel: endpoint {
+ 				remote-endpoint = <&panel_in_ebc>;

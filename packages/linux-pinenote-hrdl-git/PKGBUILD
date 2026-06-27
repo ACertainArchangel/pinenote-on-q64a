@@ -22,21 +22,21 @@ backup=("etc/mkinitcpio.conf.d/${pkgname}.conf")
 _commit=46028a0e2658877625568f2134e243b304966ef4
 source=(
   "linux-pinenote-hrdl-${_commit}.tar.gz::https://git.sr.ht/~hrdl/linux/archive/${_commit}.tar.gz"
-  0001-rockchip_ebc-fix-3win-build.patch
   0002-rockchip_ebc-temp_override-bypass-i2c-read.patch
+  0003-quartz64-ebc-rga-clk-300mhz.patch
   linux-pinenote-hrdl.preset
   mkinitcpio.conf)
 # Quartz64-A: tarball -> SKIP (sr.ht snapshots aren't byte-stable). The preset sums are
 # corrected to match the committed linux-pinenote-hrdl.preset — hrdl's commit
 # recorded stale sums for it (the file was updated without `updpkgsums`).
 sha256sums=('SKIP'
-            '4b812e4594a6eeb6cf2ce7f51d5704053c7b60e6832b12231df086c21449b86a'
             '3ccade7920e60e9da9ce1fee545a2653590b440c5e55ad985df8e7267ebbcb00'
+            '1766128032d0866c395bcdc9ffd89136f12406485435d2f5a9c444e110226d87'
             '527955361f370a4e2266c7412a2fabe2f189382b829cb893dd9cd2d6c5f2b3b0'
             '70c78d88791f018ee55876270d61c0c99f7c0c1c0b871890380c95afbc90dc86')
 b2sums=('SKIP'
-        '1a90fc6066b97d14531c0064d0a4d24798aac83768d2f7e49484eb3ed3730167eef85ba3bb5cb35fbade8eeafc0b1eed2e546735c2c6b0679a00e0e31cd027aa'
         '0c25622153520f32c9b319f6abfbdca5f7ccd3611ce015d8c50a1bf927fa465ac5e43461aeac893c1e9db47e7f8cb0ca9b8ff43fa952c9ec48c0970a2c06be9c'
+        '1162e22cad27a2c0208f7935f33189a81a47c796467b24a1c065005aa64521073761f33506ce1805767882adf27e007d184af7945cd938a1b10db62ea7b3b96f'
         'e6d7ec9d20b97956693ac082e67146227ccda0ca36407b08379417dd144a740b3e0c6f206fe97593ee64feb72dc18c130a9a3c7dc3749f7564b69a766ae09e1e'
         '397dbf8aa17aa66b66684f0560d1b619559a53bc52af31a4356bdac0bd89fa2d759b9779f3a1513e05caa586edb83dd0c70fab588a23170cb2245d64dc6ccee8')
 provides=("linux=${pkgver}" KSMBD-MODULE WIREGUARD-MODULE)
@@ -47,15 +47,16 @@ CARCH=aarch64
 
 prepare() {
   cd "$srcdir/linux-$_commit"
-  # Fix hrdl's 3WIN NEON build break (undeclared direct_mode + missing paren in the
-  # fast path), then turn 3WIN on. Boot with rockchip_ebc.direct_mode=0 to actually use it.
-  patch -Np1 -i "$srcdir/0001-rockchip_ebc-fix-3win-build.patch"
   # Quartz64-A bring-up: temp_override bypasses the flaky tps65185 i2c read,
   # killing the probe-time -110 -> refresh-thread hang.
   patch -Np1 -i "$srcdir/0002-rockchip_ebc-temp_override-bypass-i2c-read.patch"
+  # Quartz64-A: pin hclk_ebc to 300 MHz (via the rga_pre domain) like the PineNote;
+  # the unpinned default is 150 MHz, half-feeding the EBC source-data pipeline.
+  patch -Np1 -i "$srcdir/0003-quartz64-ebc-rga-clk-300mhz.patch"
+  # direct mode: build hrdl's pristine direct (non-3WIN) EBC path — NO 3WIN Kconfig
+  # and NO 3WIN NEON patch, so the EBC code is exactly hrdl's shipping driver.
+  # Boot rockchip_ebc.direct_mode=1.
   yes "" | make ARCH=arm64 pinenote_defconfig
-  ./scripts/config --enable CONFIG_DRM_ROCKCHIP_EBC_3WIN_MODE
-  yes "" | make ARCH=arm64 olddefconfig
 }
 
 build() {
